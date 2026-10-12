@@ -1,6 +1,6 @@
 {
   "name": "Nexus-Graphics",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "title": "Nexus Extended Promethium Endgame Graphics",
   "author": "Karu_Kiruna",
   "dependencies": [ "base >= 2.1","space-age" ],

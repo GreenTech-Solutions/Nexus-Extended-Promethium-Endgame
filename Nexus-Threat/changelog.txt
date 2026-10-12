@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.7
+Date: 12.10.2026
+  Update:
+    - Update to Factorio 2.1
+    - Massive performance optimizations for Nexus surfaces (thanks to [Deadpoolweid]).
+    - Fixed a bug where the shield regeneration map setting was ignored (thanks to [Deadpoolweid]).
+    - The debug commands are admin-only; the new strings are in the Nexus locale (en, de, ru, uk).
+    - Three map settings for storms (instability half-life, lightning chance, attempts per tick).
+      The defaults keep the current behaviour (thanks to [Deadpoolweid]).
+    - Added a remote interface for external storm interactions (thanks to [Deadpoolweid]).
+      A remote interface nexus-threat (registered only when nexus-threat-activation is on),
+      so other mods can work with the storms without reaching into this mod's storage: (thanks to [Deadpoolweid]).
+---------------------------------------------------------------------------------------------------
 Version: 1.0.6
 Date: 01.07.2026
   Bugfixes:

@@ -1,4 +1,24 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.3.5
+Date: 12.10.2026
+  Update:
+    - !!!!!!!! I haven't thoroughly tested this update myself yet!!! But I think “Deadpoolweid” has done a really good job here (thanks again :) ).
+      Please feel free to report any bugs, etc., on the mod page.
+
+    - Update to Factorio 2.1
+    - Massive performance optimizations for Nexus surfaces (thanks to [Deadpoolweid]).
+    - Fixed a bug where the shield regeneration map setting was ignored (thanks to [Deadpoolweid]).
+    - Added a remote interface for external storm interactions (thanks to [Deadpoolweid]).
+    - ZPE Engine now support Quality (thanks to [Deadpoolweid]).
+    - Nexus-Threat: the debug commands are admin-only; the new strings are in the Nexus locale (en, de, ru, uk).
+    - Nexus-Threat: three map settings for storms (instability half-life, lightning chance, attempts per tick).
+      The defaults keep the current behaviour (thanks to [Deadpoolweid]).
+    - Warp drive engine: it works only on routes that start or end at the Oort cloud or Sol.
+      On other routes it threw platforms through dense asteroids, the game dropped below 1 UPS and multiplayer desynced.
+      The entity description says so.
+    - A remote interface nexus-threat (registered only when nexus-threat-activation is on),
+      so other mods can work with the storms without reaching into this mod's storage: (thanks to [Deadpoolweid]).
+---------------------------------------------------------------------------------------------------
 Version: 1.3.4
 Date: 05.07.2026
   Bugfixes:
