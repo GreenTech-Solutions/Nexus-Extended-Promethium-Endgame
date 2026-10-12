@@ -30,6 +30,10 @@ local function load_nexus_config()
     
     RECIPE_BONUS_RATE = settings.global["nt-recipe-bonus"].value,		-- CHANGE SHIELD LOADING SPEED: 10.0 = 10 Schild-Energie pro Sekunde
 	DRILL_UPDATE_INTERVAL = settings.global["nt-drill-interval"].value,	-- PERFORMANCE: CALCULATE DRILLS EVERY X TICKS (1-60)
+
+    INSTABILITY_HALF_LIFE = settings.global["nt-instability-half-life"].value * 3600,	-- SECONDS UNTIL INSTABILITY HALVES ON ITS OWN (0 = NO DECAY)
+    LIGHTNING_CHANCE_PER_INSTAB = settings.global["nt-lightning-chance"].value,	-- CHANCE (%) OF A LIGHTNING ATTEMPT ADDED PER 1 % OF INSTABILITY
+    LIGHTNING_MAX_ATTEMPTS = settings.global["nt-lightning-attempts"].value,	-- MAX LIGHTNING ATTEMPTS PER TICK FROM 50 % INSTABILITY
     
 	WILD_LIGHTNING_CHANCE = 15,     -- MAX CHANCE FOR WILD LIGHTNING (0-100)
     WILD_LIGHTNING_COUNT = 5,       -- MAX ATTEMPTS FOR WILD LIGHTNING PER TICK
@@ -39,6 +43,7 @@ local function load_nexus_config()
    }
 end
 local CONFIG = load_nexus_config()
+local LN2 = 0.6931471805599453 -- math.log(2), for the instability decay
 
 -- NEW: Feature for creating the main button (Secure Sprite Path)
 local function create_toggle_button(player)
@@ -48,7 +53,7 @@ local function create_toggle_button(player)
             name = "nexus_toggle_button",
             sprite = "nexus-button-sprite", -- inside date.lua on top
             style = "mod_gui_button",
-            tooltip = "Planet Status"
+            tooltip = {"nexus-mod.planet-status"}
         }
     end
 end
@@ -357,6 +362,13 @@ script.on_event(defines.events.on_tick, function(event)
     -- Runs every X ticks based on DRILL_UPDATE_INTERVAL for better performance
     if event.tick % CONFIG.DRILL_UPDATE_INTERVAL == 0 then
         local factor = CONFIG.DRILL_UPDATE_INTERVAL
+
+        -- Instability decays exponentially when the setting "nt-instability-half-life" is above 0:
+        -- I <- I * 2^(-dt / half-life), dt in seconds. math.exp instead of ^ because Factorio replaces exp and log
+        -- with versions that give the same result on every platform.
+        if CONFIG.INSTABILITY_HALF_LIFE > 0 then
+            storage.nexus_charge = (storage.nexus_charge or 0) * math.exp(-LN2 * (factor / 60) / CONFIG.INSTABILITY_HALF_LIFE)
+        end
         for i = #storage.drills, 1, -1 do
             local d = storage.drills[i]
             if d and d.valid then
@@ -605,17 +617,18 @@ script.on_event(defines.events.on_tick, function(event)
         local storm_multiplier = storage.storm_multiplier or 1.0
         
         -- PERFORMANCE: We calculate the number of lightning strikes for this tick
-        -- At 100% instability, we attempt up to 3 lightning strikes per tick (180 per second!)
+        -- From 50% instability, we attempt up to "nt-lightning-attempts" (default 3) lightning strikes per tick (180 per second!)
         local blitz_attempts = 1
         if instability >= 50 then 
-            blitz_attempts = math.random(1, 3) 
+            blitz_attempts = math.random(1, CONFIG.LIGHTNING_MAX_ATTEMPTS)
         end
 
         for a = 1, blitz_attempts do
             -- GLOBAL CHECK
             -- The roll is continuous so that a multiplier below 1 is not rounded away; with the whole-number chance
-            -- floor(5 + instability) it gives exactly the old math.random(1, 100) <= 5 + instability at multiplier 1.
-            if math.random() * 100 < math.floor(5 + instability) * storm_multiplier then
+            -- floor(5 + k * instability), k = "nt-lightning-chance" (default 1), it gives exactly the old
+            -- math.random(1, 100) <= 5 + instability at k = 1 and multiplier 1.
+            if math.random() * 100 < math.floor(5 + CONFIG.LIGHTNING_CHANCE_PER_INSTAB * instability) * storm_multiplier then
                 -- PERFORMANCE:
                 local pool_selector = math.random(1, 3)
                 local current_pool = storage.drills
@@ -700,12 +713,25 @@ end)
 
 
 -- COMMANDS
-commands.add_command("reset_nexus", "Setzt die Nexus-Instabilität auf 0", function()
+-- The debug commands below changed the storm and the instability for whoever typed them: they are for admins (and
+-- the server console) only.
+local function admin_only(handler)
+    return function(event)
+        local player = event.player_index and game.get_player(event.player_index)
+        if player and not player.admin then
+            player.print({"nexus-mod.cmd-admin-only"})
+            return
+        end
+        handler(event)
+    end
+end
+
+commands.add_command("reset_nexus", "Setzt die Nexus-Instabilität auf 0", admin_only(function()
     storage.nexus_charge = 0
     game.print({"nexus-mod.cmd-reset"})
-end)
+end))
 
-commands.add_command("sturm_start", "Löst sofort ein Energie-Event (Sturm) aus", function()
+commands.add_command("sturm_start", "Löst sofort ein Energie-Event (Sturm) aus", admin_only(function()
     local instability = storage.nexus_charge or 50
     -- We estimate the duration of the storm
     storage.storm_timer = CONFIG.STORM_DURATION_BASE + math.ceil(instability * CONFIG.STORM_DURATION_MULT)
@@ -714,26 +740,26 @@ commands.add_command("sturm_start", "Löst sofort ein Energie-Event (Sturm) aus"
     storage.is_warning = false 
     
     game.print({"nexus-mod.cmd-storm-manual"}, {1, 0.2, 0.2})
-end)
+end))
 
 
-commands.add_command("sturm_start_timer", "Löst sofort ein Energie-Event (Sturm) mit Vorwarnung aus", function()
+commands.add_command("sturm_start_timer", "Löst sofort ein Energie-Event (Sturm) mit Vorwarnung aus", admin_only(function()
     -- Simulates the random lead time (120–600 seconds)
     storage.storm_timer = math.random(120, 600) 
     storage.is_warning = true 
     
     -- Displays the message in the chat (uses locale)
     game.print({"nexus-mod.msg-detected", storage.storm_timer}, {1, 0.8, 0})
-end)
+end))
 
 
 
-commands.add_command("sturm_stop", "Beendet den aktuellen Sturm sofort", function()
+commands.add_command("sturm_stop", "Beendet den aktuellen Sturm sofort", admin_only(function()
     storage.storm_timer = 0
     game.print({"nexus-mod.cmd-storm-stop"}, {0, 1, 0})
-end)
+end))
 
-commands.add_command("set_nexus", "Set instability (0-100)", function(event)
+commands.add_command("set_nexus", "Set instability (0-100)", admin_only(function(event)
     local eingabe = tonumber(event.parameter)
     if not eingabe or eingabe < 0 or eingabe > 100 then
         game.print("Error: Invalid value. Please enter a number between 0 and 100.")
@@ -741,21 +767,21 @@ commands.add_command("set_nexus", "Set instability (0-100)", function(event)
     end
     storage.nexus_charge = eingabe
     game.print("Nexus-instability set to " .. storage.nexus_charge .. "%")
-end)
+end))
 
 
-commands.add_command("check_storage", "Zeigt die Anzahl der gespeicherten Objekte", function()
+commands.add_command("check_storage", "Zeigt die Anzahl der gespeicherten Objekte", admin_only(function()
     local d = #storage.drills
     local a = #storage.assemblers
     local z = #storage.lightning_targets
     game.print("Speicher-Check: Bohrer: " .. d .. " | Maschinen: " .. a .. " | Blitz-Ziele: " .. z)
-end)
+end))
 
 -- Konsolen-Befehl: /nexus-refresh
-commands.add_command("nexus-refresh", "Initialisiert alle Listen der Nexus-Mod neu", function()
+commands.add_command("nexus-refresh", "Initialisiert alle Listen der Nexus-Mod neu", admin_only(function()
     rebuild_entity_lists()
     game.print("Nexus-Listen wurden erfolgreich neu geladen!")
-end)
+end))
 
 
 -- REMOTE INTERFACE "nexus-threat", for other mods (for example weaker storms after a boss falls)

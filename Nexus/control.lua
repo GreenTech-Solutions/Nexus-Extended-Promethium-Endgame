@@ -3,6 +3,8 @@
 local upgrades = require("__Nexus__.scripts.accumulator_upgrades")
 local logic = require("__Nexus__.scripts.logic")
 local gui = require("__Nexus__.scripts.gui")
+local zero_point_core = require("__Nexus__.scripts.zero_point_core")
+local warp_drive = require("__Nexus__.scripts.warp_drive")
 
 -- ============================================================================
 -- NEXUS WELCOME NOTIFICATION SYSTEM
@@ -52,6 +54,9 @@ script.on_configuration_changed(function()
     if remote.interfaces["space_finish_script"] then
         remote.call("space_finish_script", "set_victory_location", "sol")
     end
+
+    zero_point_core.refresh_all()
+    warp_drive.refresh_all()
 
     -- Show nexus welcome message
     for _, player in pairs(game.connected_players) do
@@ -194,26 +199,9 @@ script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_e
         gui.update_entity_in_force(force, entity.name, current_count, max_allowed)
     end
     
-    -- LOGIK 2: Die unsichtbaren Pumpen platzieren
-    if entity.name == "zero-point-energy-engine-core" then 
-        local surface = entity.surface
-        local position = entity.position
-        
-        local connections = {
-            { relative_pos = {x = 8.0, y = 2.0}, pump_direction = defines.direction.south },
-            { relative_pos = {x = -8.0, y = 2.0}, pump_direction = defines.direction.north },
-            { relative_pos = {x = 0.0, y = 8.0}, pump_direction = defines.direction.west },
-            { relative_pos = {x = 0.0, y = -4.0}, pump_direction = defines.direction.east }
-        }
-
-        for _, connection in pairs(connections) do
-            surface.create_entity({
-                name = "invisible-throughput-limiter-pump",
-                position = {x = position.x + connection.relative_pos.x, y = position.y + connection.relative_pos.y},
-                force = entity.force,
-                direction = connection.pump_direction
-            })
-        end
+    -- LOGIK 2: Die unsichtbaren Pumpen platzieren (pumps of the core's quality)
+    if entity.name == "zero-point-energy-engine-core" then
+        zero_point_core.place_pumps(entity)
     end
 end)
 
@@ -232,29 +220,25 @@ script.on_event({
 
     -- Logik für die unsichtbaren Pumpen
     if entity_name == "zero-point-energy-engine-core" then
-        local surface = entity.surface
-        local position = entity.position 
-        local offsets = {{x=8, y=2}, {x=-8, y=2}, {x=0, y=8}, {x=0, y=-4}}
-
-        for _, off in pairs(offsets) do
-            local found = surface.find_entities_filtered({
-                position = {x = position.x + off.x, y = position.y + off.y},
-                radius = 0.5,
-                name = "invisible-throughput-limiter-pump"
-            })
-            for _, pump in pairs(found) do
-                if pump.valid then pump.destroy() end
-            end
-        end
+        zero_point_core.remove_pumps(entity)
     end
 
-    -- Falls eine limitierte Maschine abgebaut wurde, GUI im NÄCHSTEN TICK aktualisieren
+    -- The limit GUI is updated at once. The entity still exists during these events, so it is left out of the count.
+    -- A one-shot script.on_nth_tick for the next tick was registered here before: it is lost on save and load, a second
+    -- removal in the same tick replaces it, and a client that joins in between does not have it (a desync).
     if logic.has_machine_limit(entity_name) then
-        -- Wir nutzen on_nth_tick für den exakt nächsten Tick, damit die Engine die Entity-Zahl bereits reduziert hat
-        local tick_to_run = event.tick + 1
-        script.on_nth_tick(tick_to_run, function(nth_event)
-            gui.update_entity_in_force(force, entity_name)
-            script.on_nth_tick(tick_to_run, nil) -- Handler sofort wieder entfernen
-        end)
+        gui.update_entity_in_force(force, entity_name, math.max(0, force.get_entity_count(entity_name) - 1))
     end
 end)
+
+-- WARP DRIVE: the engines of a platform work only on the way to or from the Oort cloud and Sol (scripts/warp_drive.lua)
+script.on_event(defines.events.on_space_platform_changed_state, function(event)
+    warp_drive.update_platform(event.platform)
+end)
+
+script.on_event(defines.events.on_space_platform_built_entity, function(event)
+    local engine = event.entity
+    if engine.valid then
+        warp_drive.update_platform(engine.surface.platform)
+    end
+end, {{filter = "name", name = "warp-drive-engine"}})

@@ -1,5 +1,7 @@
 --data-final-fixes.lua(mod integration)
 
+--Limiter pumps of the zero-point energy engine core for every quality (after other mods added theirs)
+require("prototypes.entity.zero_point_energy_engine_core.pump_qualities")
 
 
 
