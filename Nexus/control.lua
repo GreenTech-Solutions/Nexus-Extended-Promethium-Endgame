@@ -4,6 +4,7 @@ local upgrades = require("__Nexus__.scripts.accumulator_upgrades")
 local logic = require("__Nexus__.scripts.logic")
 local gui = require("__Nexus__.scripts.gui")
 local zero_point_core = require("__Nexus__.scripts.zero_point_core")
+local warp_drive = require("__Nexus__.scripts.warp_drive")
 
 -- ============================================================================
 -- NEXUS WELCOME NOTIFICATION SYSTEM
@@ -55,6 +56,7 @@ script.on_configuration_changed(function()
     end
 
     zero_point_core.refresh_all()
+    warp_drive.refresh_all()
 
     -- Show nexus welcome message
     for _, player in pairs(game.connected_players) do
@@ -228,3 +230,15 @@ script.on_event({
         gui.update_entity_in_force(force, entity_name, math.max(0, force.get_entity_count(entity_name) - 1))
     end
 end)
+
+-- WARP DRIVE: the engines of a platform work only on the way to or from the Oort cloud and Sol (scripts/warp_drive.lua)
+script.on_event(defines.events.on_space_platform_changed_state, function(event)
+    warp_drive.update_platform(event.platform)
+end)
+
+script.on_event(defines.events.on_space_platform_built_entity, function(event)
+    local engine = event.entity
+    if engine.valid then
+        warp_drive.update_platform(engine.surface.platform)
+    end
+end, {{filter = "name", name = "warp-drive-engine"}})
