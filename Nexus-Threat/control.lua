@@ -802,6 +802,17 @@ remote.add_interface("nexus-threat", {
         storage.storm_multiplier = multiplier
     end,
 
+    -- Adds shield energy (a negative amount takes it away), kept between 0 and the maximum shield. Returns the new
+    -- shield energy.
+    add_shield = function(amount)
+        if type(amount) ~= "number" or not (amount > -math.huge and amount < math.huge) then
+            error("nexus-threat.add_shield: expected a finite number, got " .. tostring(amount))
+        end
+        local shield = math.max(0, math.min(CONFIG.MAX_SHIELD, (storage.shield_energy or 0) + amount))
+        storage.shield_energy = shield
+        return shield
+    end,
+
     -- Snapshot of the threat state. Reads only, so it is safe to call at any time.
     get_state = function()
         local stabilizers = 0
