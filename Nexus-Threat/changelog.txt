@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.8
+Date: 02.11.2026
+  Update:
+    - !!!!!!!! Bugfixing from "Deadpoolweid" !!!!!!!! ( Github )
+
+    - New map setting "Passive shield regeneration" (nt-shield-passive-regen, off).
+      When it is on, outside an active storm the shield regenerates by "Shield regeneration" (nt-shield-regen, 0.75 per second) without stabilizers or power.
+    - Remote function nexus-threat.add_shield(amount): adds shield energy (a negative amount takes it away),
+      keeps the shield between 0 and the maximum and returns the new value. For add-ons, for example a boss whose death restores the shield.
+---------------------------------------------------------------------------------------------------
 Version: 1.0.7
 Date: 12.10.2026
   Update:

@@ -1,4 +1,20 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.3.6
+Date: 02.11.2026
+  Update:
+    - !!!!!!!! Bugfixing from "Deadpoolweid" !!!!!!!! ( Github )
+
+    - Limiter pumps: the fluid box volume = 1 held every pump at 40/s, whatever its pumping_speed. The quality pumps get a bigger fluid box.
+      Normal stays at 40/s, legendary is 100/s per pump.
+    - Warp drive: an engine that was on at departure gave one tick of warp thrust at speed 0,
+      and the platform fell back to the location every tick without leaving.
+      The engines are now off while parked and come on once the platform is on its way.
+      This also fixes leaving for the Oort cloud from a standstill.
+    - New map setting "Passive shield regeneration" (nt-shield-passive-regen, off).
+      When it is on, outside an active storm the shield regenerates by "Shield regeneration" (nt-shield-regen, 0.75 per second) without stabilizers or power.
+    - Remote function nexus-threat.add_shield(amount): adds shield energy (a negative amount takes it away),
+      keeps the shield between 0 and the maximum and returns the new value. For add-ons, for example a boss whose death restores the shield.
+---------------------------------------------------------------------------------------------------
 Version: 1.3.5
 Date: 12.10.2026
   Update:
