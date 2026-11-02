@@ -1843,7 +1843,7 @@ data:extend({
 	enabled = false,
 	ingredients = {
 		{type = "item", name = "omega-alloy",amount = 1},
-		{type = "item", name = "tungsten-plate",amount = 10}
+		{type = "item", name = "tungsten-plate",amount = 1}
 	},
 	surface_conditions =
     {
@@ -1883,7 +1883,7 @@ data:extend({
 	enabled = false,
 	ingredients = {
 		{type = "item", name = "omega-alloy",amount = 1},
-		{type = "item", name = "tungsten-carbide",amount = 10}
+		{type = "item", name = "tungsten-carbide",amount = 1}
 	},
 	surface_conditions =
     {

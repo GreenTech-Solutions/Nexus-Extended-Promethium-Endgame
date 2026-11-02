@@ -168,7 +168,7 @@ data:extend({
 	default_temperature = 3000,
 	auto_barrel = false,
 	--fuel_value = "416.6666666666667MJ", --80 GW max
-	fuel_value = "1GJ", -- 240 GW max
+	fuel_value = "1.5GJ", -- 240 GW max
 	icon = "__Nexus-Graphics__/graphics/items/zero-point-energy-anti-proton.png",
 	icon_size = 64,
 	subgroup = "fusion",

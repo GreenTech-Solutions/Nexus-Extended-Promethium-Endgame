@@ -114,7 +114,7 @@ data:extend({
 	  usage_priority = "primary-output"
     },
 	burns_fluid = true,
-    fluid_usage_per_tick = 4,
+    fluid_usage_per_tick = 160 / 60,
     minimum_temperature = 0,
 	maximum_temperature = 2000000000,
 	scale_fluid_usage = true,
