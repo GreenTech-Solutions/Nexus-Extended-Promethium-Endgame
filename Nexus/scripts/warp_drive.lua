@@ -11,6 +11,9 @@
 --
 -- A platform that reaches an ordinary route at warp speed (Oort cloud to Fulgora through Nexus) would keep that speed
 -- with the engines off, and its asteroids freeze the game. It goes on from the start of that route at ordinary speed.
+--
+-- A platform whose only fuelled thrusters are switched off warp engines tries to leave every tick and falls back, as
+-- the game counts their fuel as thrust. It is paused with a message until the player has sorted out its thrusters.
 
 local warp_drive = {}
 
@@ -41,6 +44,19 @@ function warp_drive.update_platform(platform)
     end
     if connection and not allowed and #engines > 0 then
         leave_warp_speed(platform)
+    end
+end
+
+function warp_drive.on_state_changed(event)
+    local platform = event.platform
+    warp_drive.update_platform(platform)
+
+    if not platform.valid then return end
+    if event.old_state == defines.space_platform_state.on_the_path
+        and platform.state == defines.space_platform_state.waiting_for_departure
+        and platform.surface.count_entities_filtered({name = ENGINE, limit = 1}) > 0 then
+        platform.paused = true
+        platform.force.print({"", "[color=yellow]", {"nexus-mod.chat-warp-no-thrust", platform.name}, "[/color]"})
     end
 end
 
