@@ -1,13 +1,13 @@
 {
   "name": "Nexus",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "title": "Nexus Extended Promethium Endgame",
   "author": "Karu_Kiruna",
   "dependencies": [
   "base >= 2.1",
   "space-age",
   "Nexus-Graphics >= 0.0.9",
-  "Nexus-Threat >= 1.0.8",
+  "Nexus-Threat >= 1.0.9",
   "? plasma-duct",
   "? nexus-bosses"
   ],

@@ -2,6 +2,17 @@
 local sounds = require("__base__.prototypes.entity.sounds")
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 
+data:extend({
+  util.merge({
+    data.raw.fluid["fusion-plasma"],
+    {
+      name = "fusion-plasma-mk2",
+      heat_capacity = "625J"
+    }
+  })
+})
+
+
 
 data:extend({
 
@@ -60,7 +71,7 @@ data:extend({
       usage_priority = "secondary-output",
       output_flow_limit = "1250MW", -- This is used to define max power output. 50MW at normal quality
     },
-    max_fluid_usage = 50/second, -- at normal quality -- original Version 1.0.5
+    max_fluid_usage = 2/second, -- at normal quality -- original Version 1.0.5
 	--max_fluid_usage = 5/second, --changed in Version 1.0.6--error
 
     input_fluid_box =
@@ -68,17 +79,17 @@ data:extend({
       production_type = "input",
       --pipe_covers = pipecoverspictures(),
       volume = 10,
-      filter = "fusion-plasma",
+      filter = "fusion-plasma-mk2",
       volume_reservation_fraction = 0.5,
       pipe_connections =
       {
-        { flow_direction="input",  direction = defines.direction.south, position = {-1,  2}, connection_category = {"fusion-plasma"} },
-        { flow_direction="input",  direction = defines.direction.south, position = { 1,  2}, connection_category = {"fusion-plasma"} },
-        { flow_direction="output", direction = defines.direction.north, position = { 0, -2}, connection_category = {"fusion-plasma"} },
-        { flow_direction="output", direction = defines.direction.west,  position = {-1,  0}, connection_category = {"fusion-plasma"} },
-        { flow_direction="output", direction = defines.direction.east,  position = { 1,  0}, connection_category = {"fusion-plasma"} },
-        { flow_direction="output", direction = defines.direction.west,  position = {-1, -1}, connection_category = {"fusion-plasma"} },
-        { flow_direction="output", direction = defines.direction.east,  position = { 1, -1}, connection_category = {"fusion-plasma"} },
+        { flow_direction="input",  direction = defines.direction.south, position = {-1,  2}, connection_category = {"fusion-reactor", "fusion-generator"} },
+        { flow_direction="input",  direction = defines.direction.south, position = { 1,  2}, connection_category = {"fusion-reactor", "fusion-generator"} },
+        { flow_direction="output", direction = defines.direction.north, position = { 0, -2}, connection_category = {"fusion-generator"} },
+        { flow_direction="output", direction = defines.direction.west,  position = {-1,  0}, connection_category = {"fusion-generator"} },
+        { flow_direction="output", direction = defines.direction.east,  position = { 1,  0}, connection_category = {"fusion-generator"} },
+        { flow_direction="output", direction = defines.direction.west,  position = {-1, -1}, connection_category = {"fusion-generator"} },
+        { flow_direction="output", direction = defines.direction.east,  position = { 1, -1}, connection_category = {"fusion-generator"} },
       },
     },
     output_fluid_box =
@@ -156,7 +167,7 @@ data:extend({
       usage_priority = "primary-input",
     },
     power_input = "250MW", -- at normal quality
-    max_fluid_usage = 100/second, -- at normal quality
+    max_fluid_usage = 4/second, -- at normal quality
 
     burner =
     {
@@ -189,14 +200,25 @@ data:extend({
     {
       production_type = "output",
       volume = 10,
-      filter = "fusion-plasma",
+      filter = "fusion-plasma-mk2",
       pipe_connections =
       {
-        { flow_direction = "input-output", direction = defines.direction.south, position = {-1.5,  2.5}, connection_category = {"fusion-plasma"} },
-        { flow_direction = "input-output", direction = defines.direction.south, position = { 1.5,  2.5}, connection_category = {"fusion-plasma"} },
-        { flow_direction = "input-output", direction = defines.direction.north, position = {-1.5, -2.5}, connection_category = {"fusion-plasma"} },
-        { flow_direction = "input-output", direction = defines.direction.north, position = { 1.5, -2.5}, connection_category = {"fusion-plasma"} },
+        { flow_direction = "input-output", direction = defines.direction.south, position = {-1.5,  2.5}, connection_category = {"fusion-reactor"} },
+        { flow_direction = "input-output", direction = defines.direction.south, position = { 1.5,  2.5}, connection_category = {"fusion-reactor"} },
+        { flow_direction = "input-output", direction = defines.direction.north, position = {-1.5, -2.5}, connection_category = {"fusion-reactor"} },
+        { flow_direction = "input-output", direction = defines.direction.north, position = { 1.5, -2.5}, connection_category = {"fusion-reactor"} },
       }
+    },
+    water_reflection =
+    {
+      pictures =
+      {
+          filename = "__space-age__/graphics/entity/fusion-reactor/fusion-reactor-reflection.png",
+          width = 74,
+          height = 74,
+          scale = 5,
+      },
+      rotate = false,
     }
   }
 

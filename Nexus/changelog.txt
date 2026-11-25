@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.4.1
+Date: 25.11.2026
+  Changes:
+    - Added a custom plasma type for the Fusion Reactor MK2 to distribute energy more effectively
+      and eliminate the extremely high coolant consumption (the cooling ratio now matches the original reactor).
+    - IMPORTANT: Existing Fusion Reactor MK2 setups will need to be rebuilt/reconnected, as the MK2 can no longer run on standard plasma.
+      Before updating, make sure to buffer your power supply or temporarily disconnect your devices!
+  Bugfixes:
+    - Fix the game stops loading when Nexus loads after Paracelsin 1.13
+    - Fixed a bug that allowed users to connect the ZPE Engine Core to pipes, thereby enabling a single injector to supply all 4 inputs.
+    - Fixed a bug where the Fusion Reactor MK2 wasn't connecting properly to the generators' plasma connections.
+      The cooling ratio should now be similar to that of the original reactor.
+    - Nexus-Threat: Fixed a multiplayer compatibility error / desync when disabling the "Nexus Threat Activation" startup setting.
+      The threat GUI is now cleanly removed without deregistering runtime events during multiplayer sessions.
+---------------------------------------------------------------------------------------------------
 Version: 1.4.0
 Date: 11.11.2026
   Bugfixes:

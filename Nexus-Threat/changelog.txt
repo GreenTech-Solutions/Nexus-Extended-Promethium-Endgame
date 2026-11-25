@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.9
+Date: 25.11.2026
+  Bugfixes:
+    - Fixed a multiplayer compatibility error / desync when disabling the "Nexus Threat Activation" startup setting.
+      The threat GUI is now cleanly removed without deregistering runtime events during multiplayer sessions.
+---------------------------------------------------------------------------------------------------
 Version: 1.0.8
 Date: 02.11.2026
   Update:

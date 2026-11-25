@@ -43,7 +43,7 @@ fluid_boxes =
         --pipe_picture = pipecoverspictures(),
         --pipe_covers = pipecoverspictures(),
         volume = 200,
-        pipe_connections = {{ flow_direction="output", direction = defines.direction.north, position = {0, -8.89} }},
+        pipe_connections = {{ flow_direction="output", direction = defines.direction.north, position = {0, -8.89}, connection_category = {"nexus-zpe-pipe"} }},
 		--secondary_draw_orders = { north = -1.1 },{ east = -1.1 },{ south = -1.1 },
       }
     },

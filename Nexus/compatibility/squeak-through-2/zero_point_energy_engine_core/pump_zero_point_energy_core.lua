@@ -66,12 +66,14 @@ energy_source =
             { 
                 position = {0, 0}, 
                 flow_direction = "input", -- *DIE KORREKTUR* 'type' ersetzt durch 'flow_direction'
-                direction = defines.direction.west -- Norden
+                direction = defines.direction.west, -- Norden
+				connection_category = {"nexus-zpe-pipe"}
             }, 
             { 
                 position = {0, 0}, 
                 flow_direction = "output", -- *DIE KORREKTUR* 'type' ersetzt durch 'flow_direction'
-                direction = defines.direction.east -- Süden
+                direction = defines.direction.east, -- Süden
+				connection_category = {"nexus-zpe-pipe"}
             }
         }
     },

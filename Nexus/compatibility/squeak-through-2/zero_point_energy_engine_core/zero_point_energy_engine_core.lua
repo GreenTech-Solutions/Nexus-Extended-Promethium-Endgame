@@ -91,10 +91,10 @@ data:extend({
           --pipe_covers = pipecoverspictures(),
       pipe_connections =
 		{
-			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.east, position = {6.9, 2} },   ----right
-			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.west, position = {-6.9, 2} },  ----left
-			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.south, position = {0, 7} },  ----down
-			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.north, position = {0, -3} }  ----up
+			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.east, position = {6.9, 2}, connection_category = {"nexus-zpe-pipe"} },   ----right
+			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.west, position = {-6.9, 2}, connection_category = {"nexus-zpe-pipe"} },  ----left
+			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.south, position = {0, 7}, connection_category = {"nexus-zpe-pipe"} },  ----down
+			{filter = "zero-point-energy", flow_direction = "input-output", direction = defines.direction.north, position = {0, -3}, connection_category = {"nexus-zpe-pipe"} }  ----up
 		},
     },
     fluid_boxes_off_when_no_fluid_recipe = false,

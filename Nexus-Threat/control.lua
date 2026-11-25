@@ -958,14 +958,13 @@ end)
 else
     -- This section is executed when the setting from the mod is set to OFF
     script.on_event(defines.events.on_tick, function(event)
-        -- clean up every 60 ticks
+        if event.tick % 60 ~= 0 then return end
         for _, p in pairs(game.players) do
             if p.valid then
                 if p.gui.top.nexus_frame then p.gui.top.nexus_frame.destroy() end
                 if p.gui.top.nexus_toggle_button then p.gui.top.nexus_toggle_button.destroy() end
             end
         end
-        -- disable the event handler for this game state.
-        script.on_event(defines.events.on_tick, nil)
     end)
 end -- MOD SETTING" MOD-ADDON ON/OFF "END"
+
